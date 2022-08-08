@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -7,79 +7,102 @@ import {
   ToastAndroid,
   TouchableHighlight,
   Button,
+  Alert,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
+import messaging from '@react-native-firebase/messaging';
+import ToastComponent from './Components/Toast';
 
 const App = () => {
-  const toastWithDurationHandler = () => {
-    ToastAndroid.show('Hi This is a sample toast message', ToastAndroid.SHORT);
-  };
-  const toastWithDurationGravityHandler = () => {
-    ToastAndroid.show(
-      'Hi I am toast with center gravity',
-      ToastAndroid.SHORT,
-      ToastAndroid.CENTER,
+  const requestUserPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    console.log('Authorization status(authStatus):', authStatus);
+    return (
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL
     );
   };
 
-  const toastWithDurationGravityOffsetHandler = () => {
-    ToastAndroid.show(
-      'Hi I am toast with gravity and offset',
-      ToastAndroid.LONG,
-      ToastAndroid.BOTTOM,
-      25,
-      500,
-    );
-  };
+  useEffect(() => {
+    if (requestUserPermission()) {
+      messaging()
+        .getToken()
+        .then(fcmToken => {
+          console.log('fcmToken:::', fcmToken);
+        });
+    } else {
+      console.log('Not authorization status:');
+    }
 
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      text1: 'Hello',
-      text2: 'This is some something 👋',
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'getInitialNotification',
+            +'Notification caused app to open app from quit state',
+          );
+        }
+        console.log(':::1', remoteMessage);
+        Alert.alert(
+          'getInitialNotification',
+          +'Notification caused app to open app from quit state',
+        );
+      });
+
+    messaging().onNotificationOpenedApp(async remoteMessage => {
+      if (remoteMessage) {
+        console.log(
+          'onNotificationOpenedApp:' +
+            'Notification caused app to open from background state',
+        );
+      }
+      console.log(':::2', remoteMessage);
+      Alert.alert(
+        'onNotificationOpenedApp:' +
+          'Notification caused app to open from background state',
+      );
     });
-  };
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background', remoteMessage);
+    });
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new fcm message arrived!');
+      console.log('A new fcm message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <Text style={styles.titleStyle}>
-          React Native toast alert for android
-        </Text>
-
-        <TouchableHighlight
-          style={styles.buttonStyle}
-          onPress={toastWithDurationHandler}>
-          <Text style={styles.buttonTextStyle}>
-            Generate Toast with duration
-          </Text>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          style={styles.buttonStyle}
-          onPress={toastWithDurationGravityHandler}>
-          <Text style={styles.buttonTextStyle}>
-            Generate Toast with duration and gravity
-          </Text>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          style={styles.buttonStyle}
-          onPress={toastWithDurationGravityOffsetHandler}>
-          <Text style={styles.buttonTextStyle}>
-            Generate Toast with duration, gravity and offset
-          </Text>
-        </TouchableHighlight>
-
-        <TouchableHighlight style={styles.buttonStyle} onPress={showToast}>
-          <Text style={styles.buttonTextStyle}>Show Toast</Text>
-        </TouchableHighlight>
-      </View>
-      <Toast />
+      <ToastComponent />
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    textAlign: 'center',
+    backgroundColor: '#307ecc',
+  },
+  titleText: {
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginVertical: 10,
+    color: 'white',
+  },
+  textStyle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+    color: 'white',
+  },
+});
 
 export default App;
