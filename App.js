@@ -6,7 +6,9 @@ import {
   StyleSheet,
   ToastAndroid,
   TouchableHighlight,
+  Button,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const App = () => {
   const toastWithDurationHandler = () => {
@@ -29,6 +31,15 @@ const App = () => {
       500,
     );
   };
+
+  const showToast = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Hello',
+      text2: 'This is some something 👋',
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
@@ -59,7 +70,12 @@ const App = () => {
             Generate Toast with duration, gravity and offset
           </Text>
         </TouchableHighlight>
+
+        <TouchableHighlight style={styles.buttonStyle} onPress={showToast}>
+          <Text style={styles.buttonTextStyle}>Show Toast</Text>
+        </TouchableHighlight>
       </View>
+      <Toast />
     </SafeAreaView>
   );
 };
