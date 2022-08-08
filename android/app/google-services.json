@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "305865554792",
+    "project_id": "toast-a2716",
+    "storage_bucket": "toast-a2716.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305865554792:android:31cc1b1ffdb3cc3b39b4dd",
+        "android_client_info": {
+          "package_name": "com.toastandfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "305865554792-c9eg9uflnmuqrjo3uoqm78liskq9j11t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvb9ZVz9D-TIFEssAeAQ69gvmQ27LpZVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "305865554792-c9eg9uflnmuqrjo3uoqm78liskq9j11t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
